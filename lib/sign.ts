@@ -7,7 +7,7 @@ const Tagged = cbor.Tagged;
 export const SignTag = 98;
 export const Sign1Tag = 18;
 
-async function doSign(SigStructure: any[], signer: Signer, alg): Promise<ArrayBuffer> {
+async function doSign(SigStructure: any[], signer: Signer, alg: number): Promise<ArrayBuffer> {
   let ToBeSigned = cbor.encode(SigStructure);
   return await webcrypto.subtle.sign(getAlgorithmParams(alg), signer.key, ToBeSigned);
 }
@@ -28,7 +28,7 @@ export interface Signer {
 
 export type Signers = Signer | Signer[];
 
-export async function create(headers: common.HeaderPU, payload, signers: Signers, options?: CreateOptions) {
+export async function create(headers: common.HeaderPU, payload: Uint8Array, signers: Signers, options?: CreateOptions) {
   options = options || {};
   const p = common.TranslateHeaders(headers.p || {});
   const u = common.TranslateHeaders(headers.u || {});
@@ -49,6 +49,10 @@ export async function create(headers: common.HeaderPU, payload, signers: Signers
     const alg = signerPMap.get(common.HeaderParameters.alg) || signerU.get(common.HeaderParameters.alg);
     const signerP = (signerPMap.size === 0) ? EMPTY_BUFFER : cbor.encode(signerPMap);
 
+    if (typeof alg !== 'number') {
+      throw new Error('Failed to get algorithm');
+    }
+  
     const SigStructure = [
       'Signature',
       bodyP,
@@ -69,6 +73,9 @@ export async function create(headers: common.HeaderPU, payload, signers: Signers
       externalAAD,
       payload
     ];
+    if (typeof alg !== 'number') {
+      throw new Error('Failed to get algorithm');
+    }
     const sig = await doSign(SigStructure, signer, alg);
     const signed = [p_buffer, u, payload, sig];
     return cbor.encodeCanonical(options.excludetag ? signed : new Tagged(Sign1Tag, signed));
@@ -90,7 +97,7 @@ async function isSignatureCorrect(SigStructure: any[], verifier: Verifier, alg: 
 
 type EncodedSigner = [any, Map<any, any>]
 
-function getSigner(signers: EncodedSigner[], verifier: Verifier): EncodedSigner {
+function getSigner(signers: EncodedSigner[], verifier: Verifier): EncodedSigner|undefined {
   if (verifier.kid == null) throw new Error("Missing kid");
   const kid_buf = new TextEncoder().encode(verifier.kid);
   for (let i = 0; i < signers.length; i++) {
@@ -101,12 +108,12 @@ function getSigner(signers: EncodedSigner[], verifier: Verifier): EncodedSigner 
   }
 }
 
-function getCommonParameter(first, second, parameter) {
-  let result;
-  if (first.get) {
+function getCommonParameter(first: ArrayBuffer|Buffer|Map<number, number>, second: ArrayBuffer|Buffer|Map<number, number>, parameter: number): number|undefined {
+  let result: number|undefined;
+  if ('get' in first) {
     result = first.get(parameter);
   }
-  if (!result && second.get) {
+  if (!result && ('get' in second)) {
     result = second.get(parameter);
   }
   return result;
@@ -182,15 +189,18 @@ export async function verify(payload: Uint8Array, verifier: Verifier, options?: 
     throw new Error('Failed to find signer with kid' + verifier.kid);
   }
 
-
+  let SigStructure;
+  let alg: number|undefined;
+  let sig;
   if (type === SignTag) {
     const externalAAD = verifier.externalAAD || EMPTY_BUFFER;
-    var [signerP, , sig] = signer;
+    let signerP = signer[0];
+    sig = signer[2];
     signerP = (!signerP.length) ? EMPTY_BUFFER : signerP;
     p = (!p.size) ? EMPTY_BUFFER : cbor.encode(p);
     const signerPMap = cbor.decode(signerP);
-    var alg = signerPMap.get(common.HeaderParameters.alg);
-    var SigStructure = [
+    alg = signerPMap.get(common.HeaderParameters.alg);
+    SigStructure = [
       'Signature',
       p,
       signerP,
@@ -199,15 +209,18 @@ export async function verify(payload: Uint8Array, verifier: Verifier, options?: 
     ];
   } else {
     const externalAAD = verifier.externalAAD || EMPTY_BUFFER;
-    var alg = getCommonParameter(p, u, common.HeaderParameters.alg);
+    alg = getCommonParameter(p, u, common.HeaderParameters.alg);
     p = (!p.size) ? EMPTY_BUFFER : cbor.encode(p);
-    var SigStructure = [
+    SigStructure = [
       'Signature1',
       p,
       externalAAD,
       plaintext
     ];
-    var sig = signer;
+    sig = signer;
+  }
+  if (alg === undefined) {
+    throw new Error('Failed to find algorithm of key ' + verifier.kid);
   }
   if (await isSignatureCorrect(SigStructure, verifier, alg, sig)) {
     return plaintext

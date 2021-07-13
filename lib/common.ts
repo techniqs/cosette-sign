@@ -40,14 +40,14 @@ export function AlgFromTags(tag: number): string {
 }
 
 const Translators = {
-  kid: value => new TextEncoder().encode(value).buffer,
-  alg: (value) => {
+  kid: (value: string) => new TextEncoder().encode(value).buffer,
+  alg: (value: string) => {
     if (!AlgToTags.has(value)) throw new Error('Unknown \'alg\' parameter, ' + value);
     return AlgToTags.get(value);
   }
 };
 
-export const HeaderParameters = {
+export const HeaderParameters: {[key: string]: number} = {
   partyUNonce: -22,
   static_key_id: -3,
   static_key: -2,
@@ -75,8 +75,9 @@ export function TranslateHeaders(header: HeaderType): Map<number, HeaderValue> {
       throw new Error('Unknown parameter, \'' + param + '\'');
     }
     let value = header[param];
-    if (Translators[param]) {
-      value = Translators[param](header[param]);
+    let trans = (Translators as any)[param];
+    if (trans) {
+      value = trans(header[param]);
     }
     if (value !== undefined && value !== null) {
       result.set(HeaderParameters[param], value);
@@ -85,7 +86,7 @@ export function TranslateHeaders(header: HeaderType): Map<number, HeaderValue> {
   return result;
 };
 
-const KeyParameters = {
+const KeyParameters: {[key: string]: number} = {
   crv: -1,
   k: -1,
   x: -2,
@@ -94,14 +95,14 @@ const KeyParameters = {
   kty: 1
 };
 
-const KeyTypes = {
+const KeyTypes: {[key: string]: number} = {
   OKP: 1,
   EC2: 2,
   RSA: 3,
   Symmetric: 4
 };
 
-const KeyCrv = {
+const KeyCrv: {[key: string]: number} = {
   'P-256': 1,
   'P-384': 2,
   'P-521': 3,
@@ -112,13 +113,13 @@ const KeyCrv = {
 };
 
 const KeyTranslators = {
-  kty: (value) => {
+  kty: (value: string) => {
     if (!(KeyTypes[value])) {
       throw new Error('Unknown \'kty\' parameter, ' + value);
     }
     return KeyTypes[value];
   },
-  crv: (value) => {
+  crv: (value: string) => {
     if (!(KeyCrv[value])) {
       throw new Error('Unknown \'crv\' parameter, ' + value);
     }
@@ -126,15 +127,16 @@ const KeyTranslators = {
   }
 };
 
-export function TranslateKey(key) {
+export function TranslateKey(key: CryptoKey) {
   const result = new Map();
   for (const param in key) {
     if (!KeyParameters[param]) {
       throw new Error('Unknown parameter, \'' + param + '\'');
     }
-    let value = key[param];
-    if (KeyTranslators[param]) {
-      value = KeyTranslators[param](value);
+    let value = (key as any)[param];
+    let trans = (KeyTranslators as any)[param];
+    if (trans) {
+      value = trans(value);
     }
     result.set(KeyParameters[param], value);
   }
