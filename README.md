@@ -1,27 +1,23 @@
-[![Build Status](https://travis-ci.com/erdtman/cose-js.svg?branch=master)](https://travis-ci.com/erdtman/cose-js)
-[![Coverage Status](https://coveralls.io/repos/github/erdtman/cose-js/badge.svg?branch=master)](https://coveralls.io/github/erdtman/cose-js?branch=master)
+# cosette-sign
 
-# cosette
+Typescript implementation of [COSE](https://tools.ietf.org/html/rfc8152) signing, [RFC8152](https://tools.ietf.org/html/rfc8152)
 
-Typescript implementation of [COSE](https://tools.ietf.org/html/rfc8152), [RFC8152](https://tools.ietf.org/html/rfc8152)
-
-This is a fork of cose-js with the objective of providing a well-typed implementation of cose that works in NodeJS and the browser.
+This is a fork of [cosette](https://github.com/lovasoa/cosette) that strips everything but signing.
+The reason for that is that we needed only the signing part, but the rest has dependencies to NodeJS.
 
 It depends on isomorphic-webcrypto, so on the browser, it uses the fast and secure WebCrypto cryptographic API.
 
 ## Current state
 
-Working with isomorphic-webcrypto :
- - Create and verify ECDSA signatures
- - Create and verify MAC and AES-CCM signatures
- 
-Still not ported to isomorphic-webcrypto :
- - Encryption and Decryption
+Working with isomorphic-webcrypto:
+
+- Create and verify ECDSA signatures
+- Create and verify MAC and AES-CCM signatures
 
 ## Sign
 
 ```js
-const cose = require('cosette');
+const cose = require('cosette-sign');
 const crypto = rquire("isomorphic-webcrypto");
 
 async function sign() {
@@ -49,8 +45,9 @@ sign()
 ```
 
 ## Verify Signature
+
 ```js
-const cose = require('cose-js');
+const cose = require('cosette-sign');
 
 const verifier = {
   'key': {
@@ -70,90 +67,14 @@ cose.sign.verify(
 });
 ```
 
-
-## MAC
-```js
-const cose = require('cose-js');
-
-const plaintext = 'Important message!';
-const headers = {
-  'p': {'alg': 'SHA-256_64'},
-  'u': {'kid': 'our-secret'}
-};
-const recipent = {
-  'key': Buffer.from('231f4c4d4d3051fdc2ec0a3851d5b383', 'hex')
-};
-
-cose.mac.create(
-  headers,
-  plaintext,
-  recipent)
-.then((buf) => {
-  console.log('MACed message: ' + buf.toString('hex'));
-}).catch((error) => {
-  console.log(error);
-});
-```
-## Verify MAC
-```js
-const cose = require('cose-js');
-
-const key = Buffer.from('231f4c4d4d3051fdc2ec0a3851d5b383', 'hex');
-const COSEMessage = Buffer.from('d18443a10104a1044a6f75722d73656372657472496d706f7274616e74206d65737361676521488894981d4aa5d614', 'hex');
-cose.mac.read(
-  COSEMessage,
-  key)
-.then((buf) => {
-  console.log('Verified message: ' + buf.toString('utf8'));
-}).catch((error) => {
-  console.log(error);
-});
-```
-
-## Encrypt
-```js
-const cose = require('cose-js');
-
-const plaintext = 'Secret message!';
-const headers = {
-  'p': {'alg': 'A128GCM'},
-  'u': {'kid': 'our-secret'}
-};
-const recipient = {
-  'key': Buffer.from('231f4c4d4d3051fdc2ec0a3851d5b383', 'hex')
-};
-
-cose.encrypt.create(
-  headers,
-  plaintext,
-  recipient
-).then((buf) => {
-  console.log('Encrypted message: ' + buf.toString('hex'));
-}).catch((error) => {
-  console.log(error);
-});
-```
-## Decrypt
-```js
-const cose = require('cose-js');
-
-const key = Buffer.from('231f4c4d4d3051fdc2ec0a3851d5b383', 'hex');
-const COSEMessage = Buffer.from('d8608443a10101a2044a6f75722d736563726574054c291a40271067ff57b1623c30581f23b663aaf9dfb91c5a39a175118ad7d72d416385b1b610e28b3b3fd824a397818340a040', 'hex');
-
-cose.encrypt.read(
-  COSEMessage,
-  key)
-.then((buf) => {
-  console.log('Protected message: ' + buf.toString('utf8'));
-}).catch((error) => {
-  console.log(error);
-});
-```
 ## Install
+
+```bash
+npm install cosette-sign --save
 ```
-npm install cose-js --save
-```
+
 ## Test
-```
+
+```bash
 npm test
 ```

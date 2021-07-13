@@ -1,7 +1,7 @@
 {
-  "name": "cosette",
+  "name": "cosette-sign",
   "version": "0.6.1",
-  "description": "isomorphic Typescript COSE implementation",
+  "description": "isomorphic Typescript COSE implementation (signing only)",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
@@ -18,15 +18,13 @@
     "dev": "npm-run-all -p --silent watch live",
     "build": "tsc"
   },
-  "repository": "https://github.com/lovasoa/cosette",
+  "repository": "https://github.com/rockdoc-ai/cosette-sign",
   "keywords": [
     "COSE",
     "Signing",
     "isomorphic",
     "webcrypto",
     "small",
-    "MAC",
-    "Encrypt",
     "IoT"
   ],
   "author": "Samuel Erdtman",
@@ -42,7 +40,7 @@
   ],
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/lovasoa/cosette/issues"
+    "url": "https://github.com/rockdoc-ai/cosette-sign/issues"
   },
   "ava": {
     "typescript": {
@@ -55,11 +53,10 @@
     ],
     "timeout": "2m"
   },
-  "homepage": "https://github.com/lovasoa/cosette#readme",
+  "homepage": "https://github.com/rockdoc-ai/cosette-sign#readme",
   "dependencies": {
     "cbor-web": "^7.0.5",
-    "isomorphic-webcrypto": "^2.3.8",
-    "node-hkdf-sync": "^1.0.0"
+    "isomorphic-webcrypto": "^2.3.8"
   },
   "devDependencies": {
     "@ava/typescript": "^1.1.1",
