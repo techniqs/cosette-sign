@@ -61,6 +61,7 @@
   "devDependencies": {
     "@ava/typescript": "^1.1.1",
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
+    "@types/cbor": "^6.0.0",
     "ava": "*",
     "base64url": "^3.0.1",
     "jsonfile": "^2.4.0",
