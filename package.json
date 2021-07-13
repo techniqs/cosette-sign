@@ -2,7 +2,7 @@
   "name": "cosette-sign",
   "version": "0.6.1",
   "description": "isomorphic Typescript COSE implementation (signing only)",
-  "main": "./src/index.ts",
+  "main": "./lib/index.ts",
   "scripts": {
     "prepublish": "npm run build",
     "clean": "rm -rf coverage/ .nyc_output/ build/*",
