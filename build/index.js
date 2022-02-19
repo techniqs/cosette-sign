@@ -19,7 +19,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sign = exports.common = void 0;
+exports.webcrypto = exports.cbor = exports.sign = exports.common = void 0;
 exports.common = __importStar(require("./common"));
 exports.sign = __importStar(require("./sign"));
+var sign_1 = require("./sign");
+Object.defineProperty(exports, "cbor", { enumerable: true, get: function () { return sign_1.cbor; } });
+Object.defineProperty(exports, "webcrypto", { enumerable: true, get: function () { return sign_1.webcrypto; } });
 //# sourceMappingURL=index.js.map
