@@ -7,6 +7,8 @@ const Tagged = cbor.Tagged;
 export const SignTag = 98;
 export const Sign1Tag = 18;
 
+export { webcrypto, cbor };
+
 async function doSign(SigStructure: any[], signer: Signer, alg: number): Promise<ArrayBuffer> {
   let ToBeSigned = cbor.encode(SigStructure);
   return await webcrypto.subtle.sign(getAlgorithmParams(alg), signer.key, ToBeSigned);
@@ -52,7 +54,7 @@ export async function create(headers: common.HeaderPU, payload: Uint8Array, sign
     if (typeof alg !== 'number') {
       throw new Error('Failed to get algorithm');
     }
-  
+
     const SigStructure = [
       'Signature',
       bodyP,
@@ -97,7 +99,7 @@ async function isSignatureCorrect(SigStructure: any[], verifier: Verifier, alg: 
 
 type EncodedSigner = [any, Map<any, any>]
 
-function getSigner(signers: EncodedSigner[], verifier: Verifier): EncodedSigner|undefined {
+function getSigner(signers: EncodedSigner[], verifier: Verifier): EncodedSigner | undefined {
   if (verifier.kid == null) throw new Error("Missing kid");
   const kid_buf = new TextEncoder().encode(verifier.kid);
   for (let i = 0; i < signers.length; i++) {
@@ -108,8 +110,8 @@ function getSigner(signers: EncodedSigner[], verifier: Verifier): EncodedSigner|
   }
 }
 
-function getCommonParameter(first: ArrayBuffer|Buffer|Map<number, number>, second: ArrayBuffer|Buffer|Map<number, number>, parameter: number): number|undefined {
-  let result: number|undefined;
+function getCommonParameter(first: ArrayBuffer | Buffer | Map<number, number>, second: ArrayBuffer | Buffer | Map<number, number>, parameter: number): number | undefined {
+  let result: number | undefined;
   if ('get' in first) {
     result = first.get(parameter);
   }
@@ -190,7 +192,7 @@ export async function verify(payload: Uint8Array, verifier: Verifier, options?: 
   }
 
   let SigStructure;
-  let alg: number|undefined;
+  let alg: number | undefined;
   let sig;
   if (type === SignTag) {
     const externalAAD = verifier.externalAAD || EMPTY_BUFFER;

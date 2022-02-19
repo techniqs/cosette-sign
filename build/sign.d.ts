@@ -1,7 +1,10 @@
 /// <reference types="node" />
+import * as cbor from 'cbor-web';
+import webcrypto from 'isomorphic-webcrypto';
 import * as common from './common';
 export declare const SignTag = 98;
 export declare const Sign1Tag = 18;
+export { webcrypto, cbor };
 export interface CreateOptions {
     encodep?: string;
     excludetag?: boolean;
@@ -46,4 +49,3 @@ export declare class SignatureMismatchError extends Error {
  * @returns The decoded message, if the signature was correct.
  */
 export declare function verify(payload: Uint8Array, verifier: Verifier, options?: VerifyOptions): Promise<any>;
-export {};

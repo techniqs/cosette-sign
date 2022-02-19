@@ -31,9 +31,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.verify = exports.SignatureMismatchError = exports.create = exports.Sign1Tag = exports.SignTag = void 0;
+exports.verify = exports.SignatureMismatchError = exports.create = exports.cbor = exports.webcrypto = exports.Sign1Tag = exports.SignTag = void 0;
 const cbor = __importStar(require("cbor-web"));
+exports.cbor = cbor;
 const isomorphic_webcrypto_1 = __importDefault(require("isomorphic-webcrypto"));
+exports.webcrypto = isomorphic_webcrypto_1.default;
 const common = __importStar(require("./common"));
 const EMPTY_BUFFER = common.EMPTY_BUFFER;
 const Tagged = cbor.Tagged;
