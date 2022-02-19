@@ -23,6 +23,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.webcrypto = exports.cbor = exports.sign = exports.common = void 0;
+require('cbor-rn-prereqs');
 const isomorphic_webcrypto_1 = __importDefault(require("isomorphic-webcrypto"));
 exports.webcrypto = isomorphic_webcrypto_1.default;
 exports.common = __importStar(require("./common"));

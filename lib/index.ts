@@ -1,3 +1,4 @@
+require('cbor-rn-prereqs')
 import webcrypto from 'isomorphic-webcrypto';
 
 export * as common from './common';

@@ -55,6 +55,7 @@
   },
   "homepage": "https://github.com/rockdoc-ai/cosette-sign#readme",
   "dependencies": {
+    "cbor-rn-prereqs": "8.1.0",
     "cbor-web": "^7.0.5",
     "isomorphic-webcrypto": "^2.3.8"
   },
