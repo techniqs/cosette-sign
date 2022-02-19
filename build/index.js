@@ -18,11 +18,14 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.webcrypto = exports.cbor = exports.sign = exports.common = void 0;
+const isomorphic_webcrypto_1 = __importDefault(require("isomorphic-webcrypto"));
+exports.webcrypto = isomorphic_webcrypto_1.default;
 exports.common = __importStar(require("./common"));
 exports.sign = __importStar(require("./sign"));
-var sign_1 = require("./sign");
-Object.defineProperty(exports, "cbor", { enumerable: true, get: function () { return sign_1.cbor; } });
-Object.defineProperty(exports, "webcrypto", { enumerable: true, get: function () { return sign_1.webcrypto; } });
+exports.cbor = __importStar(require("cbor-web"));
 //# sourceMappingURL=index.js.map

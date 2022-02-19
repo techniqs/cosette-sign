@@ -7,8 +7,6 @@ const Tagged = cbor.Tagged;
 export const SignTag = 98;
 export const Sign1Tag = 18;
 
-export { webcrypto, cbor };
-
 async function doSign(SigStructure: any[], signer: Signer, alg: number): Promise<ArrayBuffer> {
   let ToBeSigned = cbor.encode(SigStructure);
   return await webcrypto.subtle.sign(getAlgorithmParams(alg), signer.key, ToBeSigned);
