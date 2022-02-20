@@ -1,9 +1,11 @@
 import * as cbor from 'cbor-web';
 import webcrypto from 'isomorphic-webcrypto';
 import * as common from './common';
+import base64 from 'react-native-base64';
+
 const EMPTY_BUFFER = common.EMPTY_BUFFER;
 const Tagged = cbor.Tagged;
-
+import { RSAKeychain, RSA } from 'react-native-rsa-native';
 export const SignTag = 98;
 export const Sign1Tag = 18;
 
@@ -87,12 +89,17 @@ function getAlgorithmParams(alg: number): AlgorithmIdentifier | RsaPssParams | E
   const cose_name = common.AlgFromTags(alg);
   if (cose_name.startsWith('ES')) return { 'name': 'ECDSA', 'hash': 'SHA-' + cose_name.slice(2) }
   else if (cose_name.startsWith('RS')) return { "name": "RSASSA-PKCS1-v1_5" }
+  else if (cose_name.startsWith('PS')) return { name: "RSA-PSS", saltLength: +cose_name.slice(2) / 8 }
   else throw new Error('Unsupported algorithm, ' + cose_name);
 }
 
 async function isSignatureCorrect(SigStructure: any[], verifier: Verifier, alg: number, sig: ArrayBuffer): Promise<boolean> {
   const ToBeSigned = cbor.encode(SigStructure);
-  return webcrypto.subtle.verify(getAlgorithmParams(alg), verifier.key, sig, ToBeSigned);
+  if (common.AlgFromTags(alg).startsWith('ES')) {
+    return webcrypto.subtle.verify(getAlgorithmParams(alg), verifier.key, sig, ToBeSigned);
+  } else {
+    return RSA.verify(base64.encodeFromByteArray(ToBeSigned), base64.encodeFromByteArray(sig), verifier.keyRaw)
+  }
 }
 
 type EncodedSigner = [any, Map<any, any>]
@@ -123,6 +130,7 @@ function getCommonParameter(first: ArrayBuffer | Buffer | Map<number, number>, s
 interface Verifier {
   externalAAD?: ArrayBuffer | Buffer,
   key: CryptoKey,
+  keyRaw: string,
   kid?: string, // key identifier
 }
 
