@@ -21,6 +21,7 @@ export declare function create(headers: common.HeaderPU, payload: Uint8Array, si
 interface Verifier {
     externalAAD?: ArrayBuffer | Buffer;
     key: CryptoKey;
+    keyRaw: string;
     kid?: string;
 }
 interface VerifyOptions {

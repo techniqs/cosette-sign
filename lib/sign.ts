@@ -1,11 +1,9 @@
 import * as cbor from 'cbor-web';
 import webcrypto from 'isomorphic-webcrypto';
 import * as common from './common';
-import base64 from 'react-native-base64';
 
 const EMPTY_BUFFER = common.EMPTY_BUFFER;
 const Tagged = cbor.Tagged;
-import { RSAKeychain, RSA } from 'react-native-rsa-native';
 export const SignTag = 98;
 export const Sign1Tag = 18;
 
@@ -95,11 +93,7 @@ function getAlgorithmParams(alg: number): AlgorithmIdentifier | RsaPssParams | E
 
 async function isSignatureCorrect(SigStructure: any[], verifier: Verifier, alg: number, sig: ArrayBuffer): Promise<boolean> {
   const ToBeSigned = cbor.encode(SigStructure);
-  if (common.AlgFromTags(alg).startsWith('ES')) {
-    return webcrypto.subtle.verify(getAlgorithmParams(alg), verifier.key, sig, ToBeSigned);
-  } else {
-    return RSA.verify(base64.encodeFromByteArray(ToBeSigned), base64.encodeFromByteArray(sig), verifier.keyRaw)
-  }
+  return webcrypto.subtle.verify(getAlgorithmParams(alg), verifier.key, sig, ToBeSigned);
 }
 
 type EncodedSigner = [any, Map<any, any>]

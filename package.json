@@ -59,9 +59,7 @@
     "cbor-rn-prereqs": "8.1.0",
     "cbor-web": "^7.0.5",
     "expo-modules-core": "0.6.5",
-    "isomorphic-webcrypto": "^2.3.8",
-    "react-native-base64": "0.2.1",
-    "react-native-rsa-native": "2.0.5"
+    "isomorphic-webcrypto": "^2.3.8"
   },
   "devDependencies": {
     "@ava/typescript": "^1.1.1",
